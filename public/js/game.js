@@ -11,7 +11,7 @@ var config = {
   physics: {
     default: "arcade",
     arcade: {
-      debug: true,
+      debug: false,
       gravity: { y: 0 },
     },
   },
@@ -39,6 +39,9 @@ var characterSelected=1
 function preload() {
   this.load.image("star", "assets/star.png");
   this.load.image("character", "assets/character.png");
+  this.load.image("character1", "assets/character1.png");
+  this.load.image("character2", "assets/character2.png");
+  this.load.image("character3", "assets/character3.png");
   this.load.image("bullet", "assets/bullet.png");
 }
 
@@ -268,10 +271,11 @@ function update(time, delta) {
 function addPlayer(self, playerInfo) {
   console.log("Player character number is: "+playerInfo.playerCharacter)
   self.container = self.add.container(playerInfo.x, playerInfo.y);
+  
   self.ship = self.physics.add
-    .image(0, 0, "character")
+    .image(0, 0, "character"+playerInfo.playerCharacter)
     .setOrigin(0.5, 0.5)
-    .setScale(0.3);
+    .setScale(0.25);
 
   self.nameText = self.add.text(
     0,
@@ -325,9 +329,9 @@ function addOtherPlayers(self, playerInfo) {
   const otherPlayerContainer = self.add.container(playerInfo.x, playerInfo.y);
 
   const otherPlayer = self.physics.add
-    .sprite(0, 0, "character")
+    .sprite(0, 0, "character"+playerInfo.playerCharacter)
     .setOrigin(0.5, 0.5)
-    .setScale(0.3);
+    .setScale(0.25);
   console.log(playerInfo.playerName);
   const otherPlayerNameText = self.add.text(0, -40, playerInfo.playerName);
 
