@@ -3,12 +3,31 @@
 
     <head>
         <meta charset="utf-8">
+        <link rel="stylesheet" type="text/css" href="style.css">
         <style>
             body {margin: 0; overflow: hidden}
         </style>
     </head>
 
     <body>
+        
+
+        <!-- Modal section-->
+        <div class="bg-modal">
+            <div class="modal-content">
+
+                <div class="close">+</div>
+
+                <img src="assets/character.png" alt="">
+
+                <form action="">
+                    <input type="text" placeholder="Name" id="nameInput">
+                    <input type="text" placeholder="E-mail">
+                    <a href="#" id="button" class="button">Submit</a>
+                </form>
+            </div>
+        </div>
+
         <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.3.0/socket.io.js"></script> 
         <!--<script src="/socket.io/socket.io.js"></script>!-->
         <script src="//cdn.jsdelivr.net/npm/phaser@3.22.0/dist/phaser.min.js"></script>
