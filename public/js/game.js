@@ -295,6 +295,7 @@ function addPlayer(self, playerInfo) {
 
     bullet.destroy();
 
+    //komentarz dla commita mozna usunac
     //Wazne zeby przypisac null, samo destroy() tego nie robi, a jest to potrzebne żeby nie wejść w listenery wejscia wasd w petli update
     self.container.destroy();
     self.container = null;
