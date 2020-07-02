@@ -29,7 +29,7 @@ io.on("connection", function (socket) {
   */
   socket.on("newPlayerConfirmed", (data) => {
     console.log("someone wats to join the game!");
-
+    console.log("Numer postaci: "+data.playerCharacter)
     // create a new player and add it to our players object
     players[data.id] = {
       rotation: 0,
@@ -37,6 +37,7 @@ io.on("connection", function (socket) {
       y: Math.floor(Math.random() * 500) + 50,
       playerId: data.id,
       playerName: data.name,
+      playerCharacter: data.playerCharacter
     };
 
     // send the players object to the new player

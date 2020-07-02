@@ -20,10 +20,12 @@
     position: relative;
 }
 
-input{
-    width: 50%;
-    display: block;
-    margin: 15px auto;
+input {
+	margin: 15px auto;
+	display: block;
+	width: 50%;
+	padding: 8px;
+	border: 1px solid gray;
 }
 
 .close{
@@ -33,4 +35,31 @@ input{
     font-size: 42px;
     transform: rotate(45deg);
     cursor: pointer;
+}
+
+.characterSelect{
+    width: 150px;
+    height: 150px;
+    cursor: pointer;
+    border-radius: 10px;
+}
+
+#character1{
+    background-color: #e0e0e0;
+}
+
+
+.button {
+	background-color: #1686d9;
+	border: 2px solid white;
+	border-radius: 30px;
+	text-decoration: none;
+	padding: 10px 28px;
+	color: white;
+	margin-top: 10px;
+	display: inline-block;
+}
+
+.button:hover{
+	color: #666;
 }

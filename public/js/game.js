@@ -34,6 +34,7 @@ var canShoot = true;
 var bulletsShot = 0;
 var bulletSpeed = 700;
 var inGame = false;
+var characterSelected=1
 
 function preload() {
   this.load.image("star", "assets/star.png");
@@ -106,6 +107,7 @@ function create() {
     this.socket.emit("newPlayerConfirmed", {
       id: this.socket.id,
       name: document.getElementById("nameInput").value,
+      playerCharacter: characterSelected,
     });
   });
 
@@ -264,6 +266,7 @@ function update(time, delta) {
 }
 
 function addPlayer(self, playerInfo) {
+  console.log("Player character number is: "+playerInfo.playerCharacter)
   self.container = self.add.container(playerInfo.x, playerInfo.y);
   self.ship = self.physics.add
     .image(0, 0, "character")
@@ -378,3 +381,33 @@ function shootBullet(self) {
 
   //OKRESLENIE POZYCJI LEWEGO GORNEGO ROGU EKRANU: camera.scrollX, camera.scrollY
 }
+
+
+
+
+document.getElementById( "character1" ).onclick = function() {
+  // Change other 2 images background
+  document.getElementById("character2").style.backgroundColor = 'white';
+  document.getElementById("character3").style.backgroundColor = 'white';
+
+  document.getElementById("character1").style.backgroundColor = '#e0e0e0';
+  characterSelected=1
+};
+
+document.getElementById( "character2" ).onclick = function() {
+  // Change other 2 images background
+  document.getElementById("character1").style.backgroundColor = 'white';
+  document.getElementById("character3").style.backgroundColor = 'white';
+
+  document.getElementById("character2").style.backgroundColor = '#e0e0e0';
+  characterSelected=2
+};
+
+document.getElementById( "character3" ).onclick = function() {
+  // Change other 2 images background
+  document.getElementById("character1").style.backgroundColor = 'white';
+  document.getElementById("character2").style.backgroundColor = 'white';
+
+  document.getElementById("character3").style.backgroundColor = '#e0e0e0';
+  characterSelected=3
+};
