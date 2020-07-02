@@ -82,7 +82,7 @@ io.on("connection", function (socket) {
   });
   */
 
-  
+  //komentarz dla commita- mozna usunac
   // when a player disconnects, remove them from our players object
   socket.on("disconnect", function () {
     console.log("user disconnected");
