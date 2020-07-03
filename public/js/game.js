@@ -34,7 +34,8 @@ var canShoot = true;
 var bulletsShot = 0;
 var bulletSpeed = 700;
 var inGame = false;
-var characterSelected=1
+var characterSelected = 1;
+var w,a,s,d
 
 function preload() {
   this.load.image("star", "assets/star.png");
@@ -64,13 +65,6 @@ function create() {
   this.physics.world.setBounds(0, 0, config.width, config.height);
   //Cursors
   //this.cursors = this.input.keyboard.createCursorKeys();
-  this.cursors = this.input.keyboard.addKeys({
-    up: Phaser.Input.Keyboard.KeyCodes.W,
-    down: Phaser.Input.Keyboard.KeyCodes.S,
-    left: Phaser.Input.Keyboard.KeyCodes.A,
-    right: Phaser.Input.Keyboard.KeyCodes.D,
-    space: Phaser.Input.Keyboard.KeyCodes.SPACE,
-  });
 
   this.cameras.main.setZoom(1);
   this.cameras.main.setBackgroundColor("#246810");
@@ -101,6 +95,12 @@ function create() {
     document.querySelector(".bg-modal").style.display = "none";
     // Ustawiamy flage inGame na true - WAZNE
     inGame = true;
+    // włączamy cursorKeys
+   
+    w=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W,false);
+    a=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A,false);
+    s=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S,false);
+    d=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D,false);
     //ULTRA Ważne żeby wyczyścić planszę z dotychczaswoych graczy- inaczej po ponownym zaczęciu gry pojawią się 'sobowtóry'- 2 tekstury na sobie
     this.otherPlayers.getChildren().forEach((otherPlayer) => {
       otherPlayer.destroy();
@@ -224,17 +224,17 @@ function create() {
 function update(time, delta) {
   if (this.ship) {
     if (this.ship) {
-      if (this.cursors.left.isDown) {
+      if (a.isDown) {
         this.container.body.setVelocityX(-movementSpeed);
-      } else if (this.cursors.right.isDown) {
+      } else if (d.isDown) {
         this.container.body.setVelocity(movementSpeed);
       } else {
         this.container.body.setVelocity(0);
       }
 
-      if (this.cursors.down.isDown) {
+      if (s.isDown) {
         this.container.body.setVelocityY(movementSpeed);
-      } else if (this.cursors.up.isDown) {
+      } else if (w.isDown) {
         this.container.body.setVelocityY(-movementSpeed);
       } else {
         this.container.body.setVelocityY(0);
@@ -269,11 +269,11 @@ function update(time, delta) {
 }
 
 function addPlayer(self, playerInfo) {
-  console.log("Player character number is: "+playerInfo.playerCharacter)
+  console.log("Player character number is: " + playerInfo.playerCharacter);
   self.container = self.add.container(playerInfo.x, playerInfo.y);
-  
+
   self.ship = self.physics.add
-    .image(0, 0, "character"+playerInfo.playerCharacter)
+    .image(0, 0, "character" + playerInfo.playerCharacter)
     .setOrigin(0.5, 0.5)
     .setScale(0.25);
 
@@ -329,7 +329,7 @@ function addOtherPlayers(self, playerInfo) {
   const otherPlayerContainer = self.add.container(playerInfo.x, playerInfo.y);
 
   const otherPlayer = self.physics.add
-    .sprite(0, 0, "character"+playerInfo.playerCharacter)
+    .sprite(0, 0, "character" + playerInfo.playerCharacter)
     .setOrigin(0.5, 0.5)
     .setScale(0.25);
   console.log(playerInfo.playerName);
@@ -386,32 +386,29 @@ function shootBullet(self) {
   //OKRESLENIE POZYCJI LEWEGO GORNEGO ROGU EKRANU: camera.scrollX, camera.scrollY
 }
 
-
-
-
-document.getElementById( "character1" ).onclick = function() {
+document.getElementById("character1").onclick = function () {
   // Change other 2 images background
-  document.getElementById("character2").style.backgroundColor = 'white';
-  document.getElementById("character3").style.backgroundColor = 'white';
+  document.getElementById("character2").style.backgroundColor = "white";
+  document.getElementById("character3").style.backgroundColor = "white";
 
-  document.getElementById("character1").style.backgroundColor = '#e0e0e0';
-  characterSelected=1
+  document.getElementById("character1").style.backgroundColor = "#e0e0e0";
+  characterSelected = 1;
 };
 
-document.getElementById( "character2" ).onclick = function() {
+document.getElementById("character2").onclick = function () {
   // Change other 2 images background
-  document.getElementById("character1").style.backgroundColor = 'white';
-  document.getElementById("character3").style.backgroundColor = 'white';
+  document.getElementById("character1").style.backgroundColor = "white";
+  document.getElementById("character3").style.backgroundColor = "white";
 
-  document.getElementById("character2").style.backgroundColor = '#e0e0e0';
-  characterSelected=2
+  document.getElementById("character2").style.backgroundColor = "#e0e0e0";
+  characterSelected = 2;
 };
 
-document.getElementById( "character3" ).onclick = function() {
+document.getElementById("character3").onclick = function () {
   // Change other 2 images background
-  document.getElementById("character1").style.backgroundColor = 'white';
-  document.getElementById("character2").style.backgroundColor = 'white';
+  document.getElementById("character1").style.backgroundColor = "white";
+  document.getElementById("character2").style.backgroundColor = "white";
 
-  document.getElementById("character3").style.backgroundColor = '#e0e0e0';
-  characterSelected=3
+  document.getElementById("character3").style.backgroundColor = "#e0e0e0";
+  characterSelected = 3;
 };
