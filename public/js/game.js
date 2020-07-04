@@ -31,11 +31,11 @@ var flag = true;
 var lastShot = 0;
 var canAddCollider = true;
 var canShoot = true;
-var bulletsShot = 0;
 var bulletSpeed = 700;
 var inGame = false;
 var characterSelected = 1;
-var w,a,s,d
+var w, a, s, d;
+var bulletsShot = 0;
 
 function preload() {
   this.load.image("star", "assets/star.png");
@@ -69,14 +69,18 @@ function create() {
   this.cameras.main.setZoom(1);
   this.cameras.main.setBackgroundColor("#246810");
 
+  //this.score = 0;
+  //Score text
+  //this.scoreText = this.add.text(1800, 50, "");
+
   //STRZELANIE
   this.input.on(
     "pointerdown",
     function (pointer) {
       if (canShoot && this.ship) {
         shootBullet(this);
-        bulletsShot++;
         canShoot = false;
+        bulletsShot++;
         setTimeout(() => {
           canShoot = true;
         }, 1000);
@@ -96,11 +100,11 @@ function create() {
     // Ustawiamy flage inGame na true - WAZNE
     inGame = true;
     // włączamy cursorKeys
-   
-    w=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W,false);
-    a=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A,false);
-    s=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S,false);
-    d=this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D,false);
+
+    w = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.W, false);
+    a = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.A, false);
+    s = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.S, false);
+    d = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.D, false);
     //ULTRA Ważne żeby wyczyścić planszę z dotychczaswoych graczy- inaczej po ponownym zaczęciu gry pojawią się 'sobowtóry'- 2 tekstury na sobie
     this.otherPlayers.getChildren().forEach((otherPlayer) => {
       otherPlayer.destroy();
@@ -109,7 +113,7 @@ function create() {
     console.log(this.socket.id);
     this.socket.emit("newPlayerConfirmed", {
       id: this.socket.id,
-      name: document.getElementById("nameInput").value,
+      name: document.getElementById("nameInput").value ? document.getElementById("nameInput").value: "Hackerman",
       playerCharacter: characterSelected,
     });
   });
@@ -118,6 +122,8 @@ function create() {
   var self = this; //zeby przesylac zmienną self do funkcji
 
   //Collider bulletsGroup, otherPlayers(Group)
+
+  /*
   this.physics.add.collider(
     this.otherPlayers,
     this.bullets,
@@ -128,13 +134,13 @@ function create() {
       //otherPlayer.getAt(1).destroy()
       otherPlayer.destroy(); //chyba na wszelki wypadek
 
-      /*
+      
     self.socket.emit("playerDestroyed", {
       id: self.socket.id,
       bulletTag: bullet.type,
-    });*/
+    });
     }
-  );
+  );*/
 
   //Dodaj starych graczy u nowego gracza
   this.socket.on("currentPlayers", function (players) {
@@ -151,7 +157,10 @@ function create() {
 
   //Dodaj nowego gracza u starych graczy
   this.socket.on("newPlayer", function (playerInfo) {
-    if (inGame) addOtherPlayers(self, playerInfo);
+    if (inGame) {
+      addOtherPlayers(self, playerInfo);
+      //updateLeaderBoard1(playerInfo)
+    }
   });
 
   this.socket.on("playerMoved", function (playerInfo) {
@@ -175,6 +184,7 @@ function create() {
         "bullet"
       );
       self.bullet.type = bulletData.tag;
+      self.bullet.bulletNr = bulletData.bulletNr; //PROBLEM TU
       self.bullet.setScale(0.02);
       // Add bullet to the bullets group
       self.bullets.add(self.bullet); // tutaj ustawia nam się collider
@@ -183,6 +193,37 @@ function create() {
       self.bullet.setVelocityY(bulletData.velocityY);
 
       console.log("Received bullet data shot by someone");
+    }
+  });
+
+  this.socket.on("bulletHit", (data) => {
+    console.log(data.bulletId);
+
+    if (data.bulletId == this.socket.id) {
+      console.log(this.socket.id);
+      console.log(data.bulletID);
+      //this.score++;
+    }
+
+    this.otherPlayers.getChildren().forEach((otherPlayer) => {
+      if (otherPlayer.getAt(0).playerId == data.destroyedPlayerId) {
+        otherPlayer.destroy();
+      }
+    });
+
+    this.bullets.getChildren().forEach((bullet) => {
+      if (bullet.bulletNr == data.bulletNr) {
+        bullet.destroy();
+      }
+    });
+  });
+
+  //UPDATE LEADERBOARD
+
+  this.socket.on("updateLeaderBoard", (data) => {
+    if (inGame) {
+      console.log("UPDATING LEADERBOARD");
+      updateLeaderBoard(data);
     }
   });
 
@@ -222,6 +263,7 @@ function create() {
 }
 
 function update(time, delta) {
+  //this.scoreText.setText("Score: " + this.score);
   if (this.ship) {
     if (this.ship) {
       if (a.isDown) {
@@ -280,7 +322,7 @@ function addPlayer(self, playerInfo) {
   self.nameText = self.add.text(
     0,
     -40,
-    document.getElementById("nameInput").value
+    playerInfo.playerName
   );
   self.nameText.setOrigin(0.5, 0.5);
   self.container.setSize(
@@ -313,13 +355,14 @@ function addPlayer(self, playerInfo) {
     });
 
     inGame = false;
-
+    updateLeaderBoard({});
+    //self.score = 0;
     document.querySelector(".bg-modal").style.display = "flex";
-
-    console.log(bullet.type);
 
     self.socket.emit("playerDestroyed", {
       id: self.socket.id,
+      bulletId: bullet.type,
+      bulletNr: bullet.bulletNr,
     });
   });
 }
@@ -371,8 +414,9 @@ function shootBullet(self) {
 
   self.bullets.add(self.bullet);
   self.bullet.setVelocity(velocityX, velocityY);
-  self.bullet.type = self.socket.id + bulletsShot;
-  //console.log(self.bullet.type)
+  self.bullet.type = self.socket.id;
+  self.bullet.bulletNr = self.socket.id + bulletsShot;
+  //console.log(self.bullet.bulletNr)
 
   self.socket.emit("bulletShoting", {
     x: self.container.x,
@@ -380,6 +424,7 @@ function shootBullet(self) {
     velocityX: velocityX,
     velocityY: velocityY,
     tag: self.bullet.type,
+    bulletNr: self.bullet.bulletNr,
     //rotation: this.ship.rotation,
   });
 
@@ -412,3 +457,69 @@ document.getElementById("character3").onclick = function () {
   document.getElementById("character3").style.backgroundColor = "#e0e0e0";
   characterSelected = 3;
 };
+
+function updateLeaderBoard(data) {
+  var theDiv = document.getElementById("leaderBoard");
+  theDiv.innerHTML = "";
+  var content = document.createTextNode("Leaderboard");
+
+  //theDiv.appendChild(br);
+  theDiv.appendChild(content);
+
+  /*
+  var array=Object.keys(data)
+  console.log(array)
+  array.forEach((e)=>{
+    console.log(e.score)
+  })*/
+  var array = [];
+
+  Object.keys(data).forEach((id) => {
+    array.push(data[id]);
+  });
+  array.sort(compare);
+  /*
+  array.forEach((e)=>{
+    console.log(e)
+  })*/
+
+  var i = 1;
+  array.forEach((e) => {
+    var content = document.createTextNode(
+      i++ + ". " + e.playerName + " : " + e.score
+    );
+    var br1 = document.createElement("br");
+    theDiv.appendChild(br1);
+    theDiv.appendChild(content);
+  });
+/*
+  var i = 1;
+  Object.keys(data).forEach((id) => {
+    var content = document.createTextNode(
+      i++ + ". " + data[id].playerName + " : " + data[id].score
+    );
+    var br1 = document.createElement("br");
+    theDiv.appendChild(br1);
+    theDiv.appendChild(content);
+  });*/
+}
+
+/*
+function updateLeaderBoard1(data) {
+  var theDiv = document.getElementById("leaderBoard");
+  //theDiv.innerHTML = "";
+  //theDiv.appendChild(content);
+  var content = document.createTextNode(
+    data.playerName + " : " + data.score
+  );
+  theDiv.appendChild(content);
+
+}
+*/
+
+function compare(a, b) {
+  if (a.score > b.score) return -1;
+  if (b.score > a.score) return 1;
+
+  return 0;
+}

@@ -63,3 +63,16 @@ input {
 .button:hover{
 	color: #666;
 }
+
+
+.leader-board{
+    width: 200px;
+    height: 300px;
+    position: absolute;
+    background-color: rgba(200, 54, 54, 0.1);;
+    top: 0px;
+    right: 0px;
+    color: rgba(255, 255, 255, 1);
+    font-size: 20px;
+    padding: 10px;
+}

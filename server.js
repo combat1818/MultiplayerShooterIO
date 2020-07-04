@@ -37,9 +37,11 @@ io.on("connection", function (socket) {
       y: Math.floor(Math.random() * 500) + 50,
       playerId: data.id,
       playerName: data.name,
-      playerCharacter: data.playerCharacter
+      playerCharacter: data.playerCharacter,
+      score: 0
     };
 
+    io.emit("updateLeaderBoard", players)
     // send the players object to the new player
     socket.emit("currentPlayers", players);
     // update all other players of the new player
@@ -63,13 +65,28 @@ io.on("connection", function (socket) {
     //players[socket.id].rotation = movementData.rotation;
     //console.log("XD")
     // emit a message to all players about the player that moved
+    console.log(bulletData.bulletNr)
     socket.broadcast.emit("bulletShot", bulletData);
   });
 
   socket.on("playerDestroyed", (data)=>{
-    console.log(data.id+"has been destroyed")
+    console.log(data.id+"has been destroyed by: "+data.bulletId)
+    console.log(data.bulletNr)
+    if(players[data.bulletId])
+      players[data.bulletId].score+=1
+    //console.log(players[data.bulletId].score)
+    io.emit("bulletHit",{
+      bulletId: data.bulletId,
+      destroyedPlayerId: data.id,
+      bulletNr: data.bulletNr
+    })
     if(players[data.id])
       delete players[data.id]
+
+    io.emit("updateLeaderBoard", players)
+
+    // Aktualizujemy leaderBoard
+    //io.emit("updateLeaderBoard", players)
   })
 
 
@@ -92,6 +109,9 @@ io.on("connection", function (socket) {
     if(players[socket.id])
     delete players[socket.id];
     // emit a message to all players to remove this player
+    // Aktualizujemy LeaderBoard
+    //io.emit("updateLeaderBoard", players)
+    io.emit("updateLeaderBoard", players)
     io.emit("disconnect", socket.id);
   });
 });
