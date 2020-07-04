@@ -36,6 +36,7 @@ var inGame = false;
 var characterSelected = 1;
 var w, a, s, d;
 var bulletsShot = 0;
+var globalSocket
 
 function preload() {
   this.load.image("star", "assets/star.png");
@@ -48,7 +49,7 @@ function preload() {
 
 function create() {
   this.socket = io(); //Inicjalizujemy socketa
-
+  globalSocket=this.socket
   camera = this.cameras.main; //.startFollow(this.ship, true, 0.1, 0.1);
 
   //Add stars
@@ -485,12 +486,16 @@ function updateLeaderBoard(data) {
 
   var i = 1;
   array.forEach((e) => {
+    var span=document.createElement('span');
+    if(e.playerId==globalSocket.id)
+      span.style.backgroundColor='rgba(238,222,77,0.65)'
     var content = document.createTextNode(
       i++ + ". " + e.playerName + " : " + e.score
     );
+    span.appendChild(content)
     var br1 = document.createElement("br");
     theDiv.appendChild(br1);
-    theDiv.appendChild(content);
+    theDiv.appendChild(span);
   });
 /*
   var i = 1;
